@@ -68,8 +68,6 @@ end
 
 
 function get_access_token(o)
-    require("socket")
-    local https = require 'ssl.https'
     local utils = require 'mp.utils'
 
     request_body = (
@@ -79,11 +77,23 @@ function get_access_token(o)
         "&grant_type=refresh_token"
     )
     print("Requesting token for client_id", o.gdrive_client_id:sub(1, 10) .. "[...]")
-    local response_body, code, headers, status = https.request(
-        "https://www.googleapis.com/oauth2/v4/token",
-        request_body
-    )
-    local resp_json, err = utils.parse_json(response_body)
+
+    -- Shelling out to curl instead of using the luasec library because by
+    -- default luasec doesn't verify CA cert, and the non-default API is messy.
+    -- Also requiring curl as a dependency is probably an easier sell than
+    -- telling end-users to install some lua package.
+    ret = mp.command_native({
+        name = "subprocess",
+        args = {
+            "curl", "-s", "-X", "POST",
+            "https://www.googleapis.com/oauth2/v4/token",
+            "-H", "Accept: application/json",
+            "-H", "Content-Type: application/x-www-form-urlencoded",
+            "-d", request_body
+        },
+        capture_stdout=true
+    })
+    local resp_json, err = utils.parse_json(ret.stdout)
     access_token = resp_json["access_token"]
     print("Received access_token", access_token:sub(1, 10) .. "[...]")
     return access_token
