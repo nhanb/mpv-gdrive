@@ -9,20 +9,21 @@ OPTIONS = {}
 
 function on_load_hook()
     print("Loading GDrive script")
-    local url = mp.get_property("path", "")
-    if (url:find("gdrive://") == 1) then
-
-        print("Detected gdrive:// protocol, rewriting url")
-        url = "https://www.googleapis.com/drive/v3/files/" .. url:sub(10) .. "?alt=media"
-        mp.set_property("stream-open-filename", url)
+    local path = mp.get_property("path", "")
+    file_id = detect_gdrive_file_id(path)
+    if file_id then
+        print("Detected google drive link, rewriting stream-open-filename")
+        direct_url = "https://www.googleapis.com/drive/v3/files/" .. file_id .. "?alt=media"
+        mp.set_property("stream-open-filename", direct_url)
 
         OPTIONS = load_options()
         TOKEN = get_access_token(OPTIONS)
         set_auth_headers(TOKEN)
 
+        -- Add "refresh token" hook iff this is an actual gdrive path
         mp.add_hook("on_load_fail", 50, on_load_fail_hook)
     else
-        print("Not gdrive:// protocol, doing nothing.")
+        print("Not google drive link, doing nothing.")
     end
 
 end
@@ -45,6 +46,18 @@ mp.add_hook("on_load", 50, on_load_hook)
 -----------------------------
 -- GNARLY INTERNALS FOLLOW
 -----------------------------
+
+
+function detect_gdrive_file_id(path)
+    if (path:find("gdrive://") == 1) then
+        return path:sub(10) -- string.len("gdrive://") + 1
+    elseif (path:find("https://drive.google.com/file/d/") == 1) then
+        remainder = path:sub(33) -- string.len([stuff above]) + 1
+        return remainder:sub(1, remainder:find("/") - 1)
+    else
+        return nil
+    end
+end
 
 
 function set_auth_headers(access_token)
