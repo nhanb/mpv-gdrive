@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "mpv-gdrive helper",
+  "version": "0.1",
+  "description": "Augments Google Drive web UI to easily copy file ID",
+  "icons": {
+    "48": "mpv.svg"
+  },
+  "permissions": ["activeTab"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://drive.google.com/drive/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "browser_action": {
+    "default_icon": {
+      "48": "mpv-off.svg"
+    },
+    "default_title": "Toggle mpv helper"
+  }
+}
