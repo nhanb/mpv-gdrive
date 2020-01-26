@@ -1,5 +1,5 @@
 /**
- * Listen for toggle messages from the background script
+ * Listen for trigger message from the background script
  */
 browser.runtime.onMessage.addListener(message => {
   if (message.command === "trigger") {
@@ -13,5 +13,8 @@ function getActiveFile() {
     .closest("c-wiz");
   let fileId = wrapperEl.querySelector("[data-id]").dataset.id;
   let fileName = wrapperEl.querySelector("[aria-label]").textContent;
-  prompt(`Press Ctrl+C to copy file ID for ${fileName}:`, fileId);
+  prompt(
+    `Press Ctrl+C to play command for ${fileName}:`,
+    `mpv gdrive://${fileId}`
+  );
 }
