@@ -98,7 +98,7 @@ function get_access_token(o)
     ret = mp.command_native({
         name = "subprocess",
         args = {
-            "curl", "-s", "-X", "POST",
+            "/data/data/com.termux/files/usr/bin/curl", "-s", "-X", "POST",
             "https://www.googleapis.com/oauth2/v4/token",
             "-H", "Accept: application/json",
             "-H", "Content-Type: application/x-www-form-urlencoded",
@@ -106,6 +106,8 @@ function get_access_token(o)
         },
         capture_stdout=true
     })
+    print(">> stderr: ", ret.stderr)
+    print(">> stdout: ", ret.stdout)
     local resp_json, err = utils.parse_json(ret.stdout)
     access_token = resp_json["access_token"]
     print("Received access_token", access_token:sub(1, 10) .. "[...]")
