@@ -98,11 +98,10 @@ function get_access_token(o)
     print(
         "/data/data/com.termux/files/usr/bin/curl", "-s", "-X", "POST",
         "https://www.googleapis.com/oauth2/v4/token",
-        "-H", "Accept: application/json",
-        "-H", "Content-Type: application/x-www-form-urlencoded",
-        "-d", request_body
+        "-H", "'Accept: application/json'",
+        "-H", "'Content-Type: application/x-www-form-urlencoded'",
+        "-d", "'" .. request_body .. "'"
     )
-    print(args)
     ret = mp.command_native({
         name = "subprocess",
         args = {
