@@ -95,6 +95,14 @@ function get_access_token(o)
     -- default luasec doesn't verify CA cert, and the non-default API is messy.
     -- Also requiring curl as a dependency is probably an easier sell than
     -- telling end-users to install some lua package.
+    local args = {
+        "/data/data/com.termux/files/usr/bin/curl", "-s", "-X", "POST",
+        "https://www.googleapis.com/oauth2/v4/token",
+        "-H", "Accept: application/json",
+        "-H", "Content-Type: application/x-www-form-urlencoded",
+        "-d", request_body
+    }
+    print(args)
     ret = mp.command_native({
         name = "subprocess",
         args = {
