@@ -91,28 +91,29 @@ function get_access_token(o)
     )
     print("Requesting token for client_id", o.gdrive_client_id:sub(1, 10) .. "[...]")
 
-    -- Shelling out to curl instead of using the luasec library because by
-    -- default luasec doesn't verify CA cert, and the non-default API is messy.
-    -- Also requiring curl as a dependency is probably an easier sell than
-    -- telling end-users to install some lua package.
-    print(
-        "/data/data/com.termux/files/usr/bin/curl", "-s", "-X", "POST",
-        "https://www.googleapis.com/oauth2/v4/token",
-        "-H", "'Accept: application/json'",
-        "-H", "'Content-Type: application/x-www-form-urlencoded'",
-        "-d", "'" .. request_body .. "'"
-    )
-    ret = mp.command_native({
-        name = "subprocess",
-        args = {
-            "sh", "-c",
-            "/data/data/com.termux/files/usr/bin/curl -s -X POST https://www.googleapis.com/oauth2/v4/token -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d '" .. request_body .. "'"
-        },
-        capture_stdout=true
-    })
-    print(">> stderr: ", ret.stderr)
-    print(">> stdout: ", ret.stdout)
-    local resp_json, err = utils.parse_json(ret.stdout)
+
+    function execute_command(command)
+        local tmpfile = '/tmp/lua_execute_tmp_file'
+        local exit = os.execute(command .. ' > ' .. tmpfile .. ' 2> ' .. tmpfile .. '.err')
+
+        local stdout_file = io.open(tmpfile)
+        local stdout = stdout_file:read("*all")
+
+        local stderr_file = io.open(tmpfile .. '.err')
+        local stderr = stderr_file:read("*all")
+
+        stdout_file:close()
+        stderr_file:close()
+
+        return exit, stdout, stderr
+    end
+
+    command = "curl -s -X POST https://www.googleapis.com/oauth2/v4/token -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d '" .. request_body .. "'"
+    result, stdout, stderr = execute_command(command)
+    print('>> command:\n', command)
+    print(">> stderr: ", stderr)
+    print(">> stdout: ", stdout)
+    local resp_json, err = utils.parse_json(stdout)
     access_token = resp_json["access_token"]
     print("Received access_token", access_token:sub(1, 10) .. "[...]")
     return access_token
