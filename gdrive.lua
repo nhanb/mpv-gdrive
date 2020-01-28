@@ -108,7 +108,7 @@ function get_access_token(o)
         return exit, stdout, stderr
     end
 
-    command = "curl -s -X POST https://www.googleapis.com/oauth2/v4/token -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d '" .. request_body .. "'"
+    command = "curl --compressed -s -X POST https://www.googleapis.com/oauth2/v4/token -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d '" .. request_body .. "'"
     result, stdout, stderr = execute_command(command)
     print('>> command:\n', command)
     print(">> stderr: ", stderr)
