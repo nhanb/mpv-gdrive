@@ -1,6 +1,6 @@
 # Google Drive video support for mpv
 
-Demo: https://youtu.be/sPP34dKCZik
+Demo: https://junk.imnhan.com/mpv-gdrive.mp4
 
 Usage:
 
@@ -19,3 +19,14 @@ mpv 'gdrive://abCDef'
 ```
 
 I'm still trying to figure out a reasonably convenient UX for this.
+
+## Helper userscript
+
+- Install a userscript extension for your browser (I use ViolentMonkey)
+- Add script by URL:
+  https://raw.githubusercontent.com/nhanb/mpv-gdrive/master/userscript/gdrive-id.js
+
+Now when browsing Google Drive you should have something like this on the
+bottom left:
+
+![](https://user-images.githubusercontent.com/1446315/79535328-4c868700-80a7-11ea-9750-77175d2928c8.png)
