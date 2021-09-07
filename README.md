@@ -11,6 +11,7 @@ sudo pacman -S curl
 mkdir -p ~/.config/mpv/scripts ~/.config/mpv/script-opts
 ln -s "$PWD/gdrive.lua" "$HOME/.config/mpv/scripts/gdrive.lua"
 cp ./gdrive.conf ~/.config/mpv/script-opts/gdrive.conf
+# Now fill out your google credentials in gdrive.conf
 
 mpv 'https://drive.google.com/file/d/abCDef/view'
 # or
